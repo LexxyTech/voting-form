@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kwatire Government Hospital Staff Elections 2025</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 80px;
+      height: 80px;
+      margin-right: 16px;
+    }
+    .header h1 {
+      font-size: 24px;
+      text-align: center;
+      flex: 1;
+      color: #228B22;
+    }
+    h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .error {
+      color: red;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .nominee {
+      border: 1px solid #ccc;
+      padding: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .nominee img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-right: 16px;
+      object-fit: cover;
+    }
+    .nominee div {
+      flex: 1;
+    }
+    .nominee h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+      text-transform: uppercase;
+    }
+    .score-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .score-buttons button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+    .score-buttons button.selected {
+      background-color: #2563eb;
+      color: white;
+    }
+    .score-buttons button:disabled {
+      background-color: #d1d5db;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+    .score-buttons button:not(.selected):not(:disabled) {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    .score-buttons button:not(.selected):not(:disabled):hover {
+      background-color: #d1d5db;
+    }
+    .result-card {
+      border: 1px solid #ccc;
+      padding: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .result-card img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      margin-right: 16px;
+      object-fit: cover;
+    }
+    .result-card strong {
+      text-transform: uppercase;
+    }
+    .winner-box {
+      background-color: #d1fae5;
+      padding: 16px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .winner-box h3 {
+      color: #065f46;
+      font-size: 18px;
+      margin: 0 0 8px;
+    }
+    .winner-box p {
+      color: #047857;
+      margin: 0;
+    }
+    .winner-name {
+      color: #DAA520;
+      font-weight: bold;
+    }
+    .parameter-name {
+      color: #800000;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container"></div>
 
+  <script>
+    const parameters = [
+      "Punctuality",
+      "Attitude Towards Work",
+      "Attitude Towards Coworkers",
+      "Discipline",
+      "Innovative",
+      "Dressing",
+      "Willingness to Accept Additional Task"
+    ];
+
+    const scores = [
+      { label: "GOOD", value: 1 },
+      { label: "BETTER", value: 2 },
+      { label: "BEST", value: 3 },
+      { label: "EXCELLENT", value: 4 }
+    ];
+
+    const nominees = [
+      { name: "Elvis Amenano", photo: "https://i.imgur.com/KzRmllu.jpg" },
+      { name: "Aminata Twumasiwaa", photo: "https://i.imgur.com/WwmfmHp.jpg" },
+      { name: "Philomena Etornam Dzirasah", photo: "https://i.imgur.com/quvozoC.jpg" },
+      { name: "Essandoh Victoria", photo: "https://i.imgur.com/DE0EZ15.jpg" }
+    ];
+
+    let step = 0;
+    let voterDetails = { staffId: "", surname: "", middle
