@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kwatire Government Hospital Staff Elections 2025</title>
+  <!-- CSS styles -->
+</head>
+<body>
+  <div class="container" id="container"></div>
+  <script>
+    const parameters = [
+      "Punctuality",
+      "Attitude Towards Work",
+      "Attitude Towards Coworkers",
+      "Discipline",
+      "Innovative",
+      "Dressing",
+      "Willingness to Accept Additional Task"
+    ];
+    const scores = [
+      { label: "GOOD", value: 1 },
+      { label: "BETTER", value: 2 },
+      { label: "BEST", value: 3 },
+      { label: "EXCELLENT", value: 4 }
+    ];
+    const nominees = [
+      { name: "Elvis Amenano", photo: "https://i.imgur.com/KzRmllu.jpg" },
+      { name: "Aminata Twumasiwaa", photo: "https://i.imgur.com/WwmfmHp.jpg" },
+      { name: "Philomena Etornam Dzirasah", photo: "https://i.imgur.com/quvozoC.jpg" },
+      { name: "Essandoh Victoria", photo: "https://i.imgur.com/DE0EZ15.jpg" }
+    ];
+    let step = 0;
+    let voterDetails = { staffId: "", surname: "", middleName: "", otherName: "" };
+    let votes = {};
+    // ... rest of the script ...
+    function render() {
+      const container = document.getElementById("container");
+      container.innerHTML = `
+        <div class="header">
+          <img src="https://i.imgur.com/jM246HZ.jpg" alt="Ghana Health Service Logo">
+          <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
+        </div>
+      `;
+      // ... rest of the render function ...
+    }
+    // ... other functions ...
+    render();
+  </script>
+</body>
+</html>
