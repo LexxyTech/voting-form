@@ -50,34 +50,48 @@
       color: #8b0000;
       font-weight: bold;
     }
-    .voting-table {
-      width: 100%;
-      border-collapse: collapse;
+    .score-group {
       margin: 15px 0;
-    }
-    .voting-table th, .voting-table td {
       border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+      position: relative;
     }
-    .voting-table th {
-      background-color: #f4f4f4;
+    .score-group h3 {
+      margin: 0 0 10px 0;
     }
-    .voting-table .nominee {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .score-group label {
+      display: block;
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 3px;
+    }
+    .score-group input[type="radio"] {
+      margin-right: 10px;
+    }
+    .score-group input[type="radio"]:checked + span {
+      background-color: #e0ffe0;
+      padding: 3px 5px;
+      border-radius: 3px;
+    }
+    .clear-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .clear-btn:hover {
+      background-color: #c82333;
     }
     .nominee img {
       width: 40px;
       vertical-align: middle;
       margin-right: 10px;
-    }
-    .voting-table td input[type="radio"]:checked {
-      background-color: #28a745;
-    }
-    .voting-table td:has(input[type="radio"]:checked) {
-      background-color: #e0ffe0;
     }
     .winner {
       color: #ffd700;
@@ -157,43 +171,34 @@
         const paramIndex = step - 1;
         const parameter = parameters[paramIndex];
         const currentVotes = votes[parameter] || {};
-        const assignedPairs = Object.entries(currentVotes).map(([nominee, score]) => `${nominee}-${score}`);
         container.innerHTML += `
           <h2>Vote for ${parameter}</h2>
           <p class="parameter">${parameter}</p>
           <p>Please assign each score to a different nominee:</p>
-          <table class="voting-table">
-            <thead>
-              <tr>
-                <th>Nominee</th>
-                ${scores.map(score => `
-                  <th>${score.label} (${score.value})</th>
-                `).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${nominees.map(nominee => `
-                <tr>
-                  <td class="nominee">
-                    <img src="${nominee.photo}" alt="${nominee.name}">
-                    ${nominee.name}
-                  </td>
-                  ${scores.map(score => {
-                    const isChecked = currentVotes[nominee.name] === score.value;
-                    return `
-                      <td>
-                        <input type="radio" 
-                               name="vote-${paramIndex}" 
-                               value="${nominee.name}-${score.value}" 
-                               ${isChecked ? 'checked' : ''} 
-                               onchange="recordVote('${parameter}', '${nominee.name}', ${score.value})">
-                      </td>
-                    `;
-                  }).join('')}
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+          ${scores.map(score => `
+            <div class="score-group">
+              <h3>${score.label} (${score.value})</h3>
+              <button class="clear-btn" onclick="clearScore('${parameter}', ${score.value}, ${paramIndex})">Clear</button>
+              ${nominees.map(nominee => {
+                const isChecked = currentVotes[nominee.name] === score.value;
+                const isDisabled = Object.keys(currentVotes).includes(nominee.name) && !isChecked;
+                return `
+                  <label>
+                    <input type="radio" 
+                           name="score-${score.value}-${paramIndex}" 
+                           value="${nominee.name}" 
+                           ${isChecked ? 'checked' : ''} 
+                           ${isDisabled ? 'disabled' : ''} 
+                           onchange="recordVote('${parameter}', '${nominee.name}', ${score.value}, ${paramIndex})">
+                    <span class="nominee">
+                      <img src="${nominee.photo}" alt="${nominee.name}">
+                      ${nominee.name}
+                    </span>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          `).join('')}
           <button onclick="nextStep()">Next</button>
         `;
       } else if (step > parameters.length) {
@@ -221,8 +226,8 @@
           alert("Please assign all scores (GOOD, BETTER, BEST, EXCELLENT) to a nominee.");
           return;
         }
-        if (assignedNominees.size !== nominees.length) {
-          alert("Each nominee must be assigned a score.");
+        if (assignedNominees.size !== scores.length) {
+          alert("Each score must be assigned to a different nominee.");
           return;
         }
       }
@@ -230,25 +235,56 @@
       render();
     }
 
-    function recordVote(parameter, nominee, score) {
+    function recordVote(parameter, nominee, score, paramIndex) {
       if (!votes[parameter]) {
         votes[parameter] = {};
       }
 
-      // Clear all previous votes for this parameter
-      votes[parameter] = {};
+      const currentVotes = votes[parameter];
 
-      // Assign the score to the current nominee
-      votes[parameter][nominee] = score;
-
-      // Rebuild the votes object based on all selected radio buttons
-      const selectedRadios = document.querySelectorAll(`input[name="vote-${step - 1}"]:checked`);
-      selectedRadios.forEach(radio => {
-        const [selectedNominee, selectedScore] = radio.value.split('-');
-        votes[parameter][selectedNominee] = parseInt(selectedScore);
+      // Clear this nominee from other score groups
+      scores.forEach(otherScore => {
+        if (otherScore.value !== score && currentVotes[nominee] === otherScore.value) {
+          delete currentVotes[nominee];
+          const radio = document.querySelector(
+            `input[name="score-${otherScore.value}-${paramIndex}"][value="${nominee}"]`
+          );
+          if (radio) {
+            radio.checked = false;
+          }
+        }
       });
 
+      // Clear this score from other nominees
+      Object.keys(currentVotes).forEach(otherNominee => {
+        if (otherNominee !== nominee && currentVotes[otherNominee] === score) {
+          delete currentVotes[otherNominee];
+        }
+      });
+
+      // Assign the score to the current nominee
+      currentVotes[nominee] = score;
+      votes[parameter] = currentVotes;
+
       console.log('Votes after update:', votes);
+      render();
+    }
+
+    function clearScore(parameter, score, paramIndex) {
+      if (!votes[parameter]) {
+        votes[parameter] = {};
+      }
+
+      const currentVotes = votes[parameter];
+      Object.keys(currentVotes).forEach(nominee => {
+        if (currentVotes[nominee] === score) {
+          delete currentVotes[nominee];
+        }
+      });
+
+      votes[parameter] = currentVotes;
+      console.log('Votes after clearing:', votes);
+      render();
     }
 
     async function submitVotes() {
