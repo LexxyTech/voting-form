@@ -41,7 +41,7 @@
       margin-bottom: 5px;
       font-weight: bold;
     }
-    .form-group input, .form-group select {
+    .form-group input {
       width: 100%;
       padding: 8px;
       box-sizing: border-box;
@@ -50,11 +50,18 @@
       color: #8b0000;
       font-weight: bold;
     }
-    .nominee {
-      margin: 10px 0;
+    .score-group {
+      margin: 15px 0;
+    }
+    .score-group label {
+      display: block;
+      margin: 5px 0;
+    }
+    .score-group input[type="radio"] {
+      margin-right: 10px;
     }
     .nominee img {
-      width: 50px;
+      width: 40px;
       vertical-align: middle;
       margin-right: 10px;
     }
@@ -78,13 +85,13 @@
   <div class="container" id="container"></div>
   <script>
     const parameters = [
-      "Punctuality",
-      "Attitude Towards Work",
-      "Attitude Towards Coworkers",
-      "Discipline",
-      "Innovative",
-      "Dressing",
-      "Willingness to Accept Additional Task"
+      "PUNCTUALITY",
+      "ATTITUDE TOWARDS WORK",
+      "ATTITUDE TOWARDS COWORKERS",
+      "DISCIPLINE",
+      "INNOVATIVE",
+      "DRESSING",
+      "WILLINGNESS TO ACCEPT ADDITIONAL TASK"
     ];
     const scores = [
       { label: "GOOD", value: 1 },
@@ -104,7 +111,6 @@
 
     function render() {
       const container = document.getElementById("container");
-      // Always start with the header
       container.innerHTML = `
         <div class="header">
           <img src="https://i.imgur.com/jM246HZ.jpg" alt="Ghana Health Service Logo">
@@ -112,7 +118,6 @@
         </div>
       `;
 
-      // Step 0: Voter Details Form
       if (step === 0) {
         container.innerHTML += `
           <h2>Voter Details</h2>
@@ -134,37 +139,36 @@
           </div>
           <button onclick="nextStep()">Next</button>
         `;
-      } 
-      // Step 1 to 7: Voting for each parameter
-      else if (step > 0 && step <= parameters.length) {
+      } else if (step > 0 && step <= parameters.length) {
         const paramIndex = step - 1;
         const parameter = parameters[paramIndex];
         container.innerHTML += `
           <h2>Vote for ${parameter}</h2>
           <p class="parameter">${parameter}</p>
-          ${nominees.map(nominee => `
-            <div class="nominee">
-              <img src="${nominee.photo}" alt="${nominee.name}">
-              <span>${nominee.name}</span>
-              <select id="score-${nominee.name}" onchange="recordVote('${parameter}', '${nominee.name}', this.value)">
-                <option value="">Select Score</option>
-                ${scores.map(score => `
-                  <option value="${score.value}">${score.label}</option>
-                `).join('')}
-              </select>
+          ${scores.map(score => `
+            <div class="score-group">
+              <h3>${score.label} (${score.value})</h3>
+              ${nominees.map(nominee => `
+                <label>
+                  <input type="radio" name="score-${score.value}-${paramIndex}" 
+                         value="${nominee.name}" 
+                         onchange="recordVote('${parameter}', '${nominee.name}', ${score.value})">
+                  <span class="nominee">
+                    <img src="${nominee.photo}" alt="${nominee.name}">
+                    ${nominee.name}
+                  </span>
+                </label>
+              `).join('')}
             </div>
           `).join('')}
           <button onclick="nextStep()">Next</button>
         `;
-      } 
-      // Final Step: Submit Votes and Show Results
-      else if (step > parameters.length) {
+      } else if (step > parameters.length) {
         submitVotes();
       }
     }
 
     function nextStep() {
-      // Save voter details on the first step
       if (step === 0) {
         voterDetails.staffId = document.getElementById("staffId").value || "";
         voterDetails.surname = document.getElementById("surname").value || "";
@@ -183,7 +187,14 @@
       if (!votes[parameter]) {
         votes[parameter] = {};
       }
-      votes[parameter][nominee] = parseInt(score) || 0;
+      // Clear previous score for this nominee in this parameter
+      Object.keys(votes[parameter]).forEach(existingNominee => {
+        if (votes[parameter][existingNominee] === score) {
+          delete votes[parameter][existingNominee];
+        }
+      });
+      // Assign the new score
+      votes[parameter][nominee] = score;
     }
 
     async function submitVotes() {
@@ -198,7 +209,6 @@
         });
         const result = await response.json();
         if (result.success) {
-          // Calculate and display results
           const totals = {};
           nominees.forEach(nominee => {
             totals[nominee.name] = 0;
@@ -226,7 +236,6 @@
       }
     }
 
-    // Initial render
     render();
   </script>
 </body>
