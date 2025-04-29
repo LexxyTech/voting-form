@@ -50,18 +50,23 @@
       color: #8b0000;
       font-weight: bold;
     }
-    .score-group {
+    .voting-table {
+      width: 100%;
+      border-collapse: collapse;
       margin: 15px 0;
+    }
+    .voting-table th, .voting-table td {
       border: 1px solid #ddd;
-      padding: 10px;
-      border-radius: 5px;
+      padding: 8px;
+      text-align: center;
     }
-    .score-group label {
-      display: block;
-      margin: 5px 0;
+    .voting-table th {
+      background-color: #f4f4f4;
     }
-    .score-group input[type="radio"] {
-      margin-right: 10px;
+    .voting-table .nominee {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .nominee img {
       width: 40px;
@@ -148,23 +153,34 @@
         container.innerHTML += `
           <h2>Vote for ${parameter}</h2>
           <p class="parameter">${parameter}</p>
-          ${scores.map(score => `
-            <div class="score-group">
-              <h3>${score.label} (${score.value})</h3>
+          <table class="voting-table">
+            <thead>
+              <tr>
+                <th>Nominee</th>
+                ${scores.map(score => `
+                  <th>${score.label} (${score.value})</th>
+                `).join('')}
+              </tr>
+            </thead>
+            <tbody>
               ${nominees.map(nominee => `
-                <label>
-                  <input type="radio" 
-                         name="score-${score.value}-${paramIndex}" 
-                         value="${nominee.name}" 
-                         onchange="recordVote('${parameter}', '${nominee.name}', ${score.value}, ${paramIndex})">
-                  <span class="nominee">
+                <tr>
+                  <td class="nominee">
                     <img src="${nominee.photo}" alt="${nominee.name}">
                     ${nominee.name}
-                  </span>
-                </label>
+                  </td>
+                  ${scores.map(score => `
+                    <td>
+                      <input type="radio" 
+                             name="vote-${paramIndex}" 
+                             value="${nominee.name}-${score.value}" 
+                             onchange="recordVote('${parameter}', '${nominee.name}', ${score.value})">
+                    </td>
+                  `).join('')}
+                </tr>
               `).join('')}
-            </div>
-          `).join('')}
+            </tbody>
+          </table>
           <button onclick="nextStep()">Next</button>
         `;
       } else if (step > parameters.length) {
@@ -187,36 +203,13 @@
       render();
     }
 
-    function recordVote(parameter, nominee, score, paramIndex) {
+    function recordVote(parameter, nominee, score) {
       if (!votes[parameter]) {
         votes[parameter] = {};
       }
 
-      // Clear this nominee from other score groups
-      scores.forEach(otherScore => {
-        if (otherScore.value !== score && votes[parameter][nominee] === otherScore.value) {
-          delete votes[parameter][nominee];
-          const radio = document.querySelector(
-            `input[name="score-${otherScore.value}-${paramIndex}"][value="${nominee}"]`
-          );
-          if (radio) {
-            radio.checked = false;
-          }
-        }
-      });
-
-      // Clear this score from other nominees
-      nominees.forEach(otherNominee => {
-        if (otherNominee.name !== nominee && votes[parameter][otherNominee.name] === score) {
-          delete votes[parameter][otherNominee.name];
-          const radio = document.querySelector(
-            `input[name="score-${score}-${paramIndex}"][value="${otherNominee.name}"]`
-          );
-          if (radio) {
-            radio.checked = false;
-          }
-        }
-      });
+      // Clear all previous votes for this parameter
+      votes[parameter] = {};
 
       // Assign the score to the current nominee
       votes[parameter][nominee] = score;
