@@ -73,6 +73,12 @@
       vertical-align: middle;
       margin-right: 10px;
     }
+    .voting-table td input[type="radio"]:checked {
+      background-color: #28a745;
+    }
+    .voting-table td:has(input[type="radio"]:checked) {
+      background-color: #e0ffe0;
+    }
     .winner {
       color: #ffd700;
       font-weight: bold;
@@ -151,6 +157,7 @@
         const paramIndex = step - 1;
         const parameter = parameters[paramIndex];
         const currentVotes = votes[parameter] || {};
+        const assignedPairs = Object.entries(currentVotes).map(([nominee, score]) => `${nominee}-${score}`);
         container.innerHTML += `
           <h2>Vote for ${parameter}</h2>
           <p class="parameter">${parameter}</p>
@@ -173,16 +180,13 @@
                   </td>
                   ${scores.map(score => {
                     const isChecked = currentVotes[nominee.name] === score.value;
-                    const isNomineeAssigned = Object.keys(currentVotes).includes(nominee.name);
-                    const isScoreAssigned = Object.values(currentVotes).includes(score.value);
-                    const isDisabled = (isNomineeAssigned && !isChecked) || (isScoreAssigned && !isChecked);
                     return `
                       <td>
-                        <input type="checkbox" 
-                               id="vote-${paramIndex}-${nominee.name}-${score.value}" 
+                        <input type="radio" 
+                               name="vote-${paramIndex}" 
+                               value="${nominee.name}-${score.value}" 
                                ${isChecked ? 'checked' : ''} 
-                               ${isDisabled ? 'disabled' : ''} 
-                               onchange="recordVote('${parameter}', '${nominee.name}', ${score.value}, ${paramIndex})">
+                               onchange="recordVote('${parameter}', '${nominee.name}', ${score.value})">
                       </td>
                     `;
                   }).join('')}
@@ -217,8 +221,8 @@
           alert("Please assign all scores (GOOD, BETTER, BEST, EXCELLENT) to a nominee.");
           return;
         }
-        if (assignedNominees.size !== scores.length) {
-          alert("Each score must be assigned to a different nominee.");
+        if (assignedNominees.size !== nominees.length) {
+          alert("Each nominee must be assigned a score.");
           return;
         }
       }
@@ -226,44 +230,25 @@
       render();
     }
 
-    function recordVote(parameter, nominee, score, paramIndex) {
+    function recordVote(parameter, nominee, score) {
       if (!votes[parameter]) {
         votes[parameter] = {};
       }
 
-      const currentVotes = votes[parameter];
-      const checkbox = document.getElementById(`vote-${paramIndex}-${nominee}-${score}`);
+      // Clear all previous votes for this parameter
+      votes[parameter] = {};
 
-      if (checkbox.checked) {
-        // If the checkbox is checked, assign the score to the nominee
-        // First, clear any previous score for this nominee
-        Object.keys(currentVotes).forEach(otherNominee => {
-          if (otherNominee === nominee) {
-            delete currentVotes[otherNominee];
-          }
-        });
+      // Assign the score to the current nominee
+      votes[parameter][nominee] = score;
 
-        // Then, clear this score from any other nominee
-        Object.keys(currentVotes).forEach(otherNominee => {
-          if (currentVotes[otherNominee] === score) {
-            delete currentVotes[otherNominee];
-          }
-        });
+      // Rebuild the votes object based on all selected radio buttons
+      const selectedRadios = document.querySelectorAll(`input[name="vote-${step - 1}"]:checked`);
+      selectedRadios.forEach(radio => {
+        const [selectedNominee, selectedScore] = radio.value.split('-');
+        votes[parameter][selectedNominee] = parseInt(selectedScore);
+      });
 
-        // Assign the score to the current nominee
-        currentVotes[nominee] = score;
-      } else {
-        // If the checkbox is unchecked, remove the score for this nominee
-        if (currentVotes[nominee] === score) {
-          delete currentVotes[nominee];
-        }
-      }
-
-      votes[parameter] = currentVotes;
       console.log('Votes after update:', votes);
-
-      // Re-render to update the disabled states
-      render();
     }
 
     async function submitVotes() {
