@@ -4,7 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kwatire Government Hospital Staff Elections 2025</title>
-  <!-- CSS styles -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .header {
+      background-color: #28a745;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .header img {
+      width: 100px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .header h1 {
+      display: inline;
+      font-size: 24px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .parameter {
+      color: #8b0000;
+      font-weight: bold;
+    }
+    .nominee {
+      margin: 10px 0;
+    }
+    .nominee img {
+      width: 50px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .winner {
+      color: #ffd700;
+      font-weight: bold;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
 <body>
   <div class="container" id="container"></div>
@@ -33,18 +101,132 @@
     let step = 0;
     let voterDetails = { staffId: "", surname: "", middleName: "", otherName: "" };
     let votes = {};
-    // ... rest of the script ...
+
     function render() {
       const container = document.getElementById("container");
+      // Always start with the header
       container.innerHTML = `
         <div class="header">
           <img src="https://i.imgur.com/jM246HZ.jpg" alt="Ghana Health Service Logo">
           <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
         </div>
       `;
-      // ... rest of the render function ...
+
+      // Step 0: Voter Details Form
+      if (step === 0) {
+        container.innerHTML += `
+          <h2>Voter Details</h2>
+          <div class="form-group">
+            <label for="staffId">Staff ID</label>
+            <input type="text" id="staffId" placeholder="Enter your Staff ID">
+          </div>
+          <div class="form-group">
+            <label for="surname">Surname</label>
+            <input type="text" id="surname" placeholder="Enter your Surname">
+          </div>
+          <div class="form-group">
+            <label for="middleName">Middle Name</label>
+            <input type="text" id="middleName" placeholder="Enter your Middle Name">
+          </div>
+          <div class="form-group">
+            <label for="otherName">Other Name</label>
+            <input type="text" id="otherName" placeholder="Enter your Other Name">
+          </div>
+          <button onclick="nextStep()">Next</button>
+        `;
+      } 
+      // Step 1 to 7: Voting for each parameter
+      else if (step > 0 && step <= parameters.length) {
+        const paramIndex = step - 1;
+        const parameter = parameters[paramIndex];
+        container.innerHTML += `
+          <h2>Vote for ${parameter}</h2>
+          <p class="parameter">${parameter}</p>
+          ${nominees.map(nominee => `
+            <div class="nominee">
+              <img src="${nominee.photo}" alt="${nominee.name}">
+              <span>${nominee.name}</span>
+              <select id="score-${nominee.name}" onchange="recordVote('${parameter}', '${nominee.name}', this.value)">
+                <option value="">Select Score</option>
+                ${scores.map(score => `
+                  <option value="${score.value}">${score.label}</option>
+                `).join('')}
+              </select>
+            </div>
+          `).join('')}
+          <button onclick="nextStep()">Next</button>
+        `;
+      } 
+      // Final Step: Submit Votes and Show Results
+      else if (step > parameters.length) {
+        submitVotes();
+      }
     }
-    // ... other functions ...
+
+    function nextStep() {
+      // Save voter details on the first step
+      if (step === 0) {
+        voterDetails.staffId = document.getElementById("staffId").value || "";
+        voterDetails.surname = document.getElementById("surname").value || "";
+        voterDetails.middleName = document.getElementById("middleName").value || "";
+        voterDetails.otherName = document.getElementById("otherName").value || "";
+        if (!voterDetails.staffId || !voterDetails.surname) {
+          alert("Please fill in Staff ID and Surname.");
+          return;
+        }
+      }
+      step++;
+      render();
+    }
+
+    function recordVote(parameter, nominee, score) {
+      if (!votes[parameter]) {
+        votes[parameter] = {};
+      }
+      votes[parameter][nominee] = parseInt(score) || 0;
+    }
+
+    async function submitVotes() {
+      const container = document.getElementById("container");
+      try {
+        const response = await fetch('http://localhost:3000/submit-vote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ voterDetails, votes })
+        });
+        const result = await response.json();
+        if (result.success) {
+          // Calculate and display results
+          const totals = {};
+          nominees.forEach(nominee => {
+            totals[nominee.name] = 0;
+            Object.values(votes).forEach(paramVotes => {
+              totals[nominee.name] += paramVotes[nominee.name] || 0;
+            });
+          });
+          const maxScore = Math.max(...Object.values(totals));
+          const winner = Object.keys(totals).find(name => totals[name] === maxScore);
+
+          container.innerHTML += `
+            <h2>Thank You for Voting!</h2>
+            <h3>Results</h3>
+            ${nominees.map(nominee => `
+              <p>${nominee.name}: ${totals[nominee.name]} points</p>
+            `).join('')}
+            <p class="winner">Winner: ${winner} with ${maxScore} points!</p>
+          `;
+        } else {
+          container.innerHTML += `<p>Error submitting vote. Please try again.</p>`;
+        }
+      } catch (error) {
+        console.error('Error submitting votes:', error);
+        container.innerHTML += `<p>Error submitting vote. Please try again.</p>`;
+      }
+    }
+
+    // Initial render
     render();
   </script>
 </body>
