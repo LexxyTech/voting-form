@@ -50,14 +50,17 @@
       color: #8b0000;
       font-weight: bold;
     }
-    .score-group {
+    .nominee-group {
       margin: 15px 0;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
     }
-    .score-group label {
+    .nominee-group label {
       display: block;
       margin: 5px 0;
     }
-    .score-group input[type="radio"] {
+    .nominee-group input[type="radio"] {
       margin-right: 10px;
     }
     .nominee img {
@@ -145,18 +148,20 @@
         container.innerHTML += `
           <h2>Vote for ${parameter}</h2>
           <p class="parameter">${parameter}</p>
-          ${scores.map(score => `
-            <div class="score-group">
-              <h3>${score.label} (${score.value})</h3>
-              ${nominees.map(nominee => `
+          ${nominees.map(nominee => `
+            <div class="nominee-group">
+              <h3>
+                <span class="nominee">
+                  <img src="${nominee.photo}" alt="${nominee.name}">
+                  ${nominee.name}
+                </span>
+              </h3>
+              ${scores.map(score => `
                 <label>
-                  <input type="radio" name="score-${score.value}-${paramIndex}" 
-                         value="${nominee.name}" 
+                  <input type="radio" name="nominee-${nominee.name}-${paramIndex}" 
+                         value="${score.value}" 
                          onchange="recordVote('${parameter}', '${nominee.name}', ${score.value})">
-                  <span class="nominee">
-                    <img src="${nominee.photo}" alt="${nominee.name}">
-                    ${nominee.name}
-                  </span>
+                  ${score.label} (${score.value})
                 </label>
               `).join('')}
             </div>
@@ -187,13 +192,7 @@
       if (!votes[parameter]) {
         votes[parameter] = {};
       }
-      // Clear previous score for this nominee in this parameter
-      Object.keys(votes[parameter]).forEach(existingNominee => {
-        if (votes[parameter][existingNominee] === score) {
-          delete votes[parameter][existingNominee];
-        }
-      });
-      // Assign the new score
+      // Assign the score to the nominee
       votes[parameter][nominee] = score;
     }
 
