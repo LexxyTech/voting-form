@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+     <html lang="en">
+     <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Kwatire Government Hospital Staff Elections 2025</title>
+       <style>
+         body {
+           font-family: Arial, sans-serif;
+           margin: 20px;
+           background-color: #f4f4f4;
+         }
+         header {
+           text-align: center;
+           padding: 20px;
+           background-color: #003087;
+           color: white;
+           border-radius: 5px;
+         }
+         #voting-form-container {
+           max-width: 900px;
+           margin: 0 auto;
+           background-color: white;
+           padding: 20px;
+           border-radius: 5px;
+           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+         }
+         h2, h3 {
+           color: #003087;
+         }
+         label {
+           display: inline-block;
+           width: 150px;
+           font-weight: bold;
+         }
+         input[type="text"] {
+           padding: 5px;
+           margin-bottom: 10px;
+           width: 200px;
+         }
+         table {
+           width: 100%;
+           border-collapse: collapse;
+           margin-bottom: 20px;
+         }
+         th, td {
+           border: 1px solid #ddd;
+           padding: 8px;
+           text-align: center;
+         }
+         th {
+           background-color: #003087;
+           color: white;
+         }
+         .nominee-cell {
+           display: flex;
+           align-items: center;
+           justify-content: center;
+         }
+         .nominee-cell img {
+           width: 50px;
+           height: 50px;
+           margin-right: 10px;
+           border-radius: 50%;
+         }
+         button {
+           padding: 10px 20px;
+           margin: 10px 5px;
+           background-color: #003087;
+           color: white;
+           border: none;
+           border-radius: 5px;
+           cursor: pointer;
+         }
+         button:hover {
+           background-color: #0056b3;
+         }
+         .error {
+           color: red;
+           display: none;
+         }
+       </style>
+     </head>
+     <body>
+       <header>
+         <img src="ghs-logo.png" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
+         <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
+       </header>
+
+       <div id="voting-form-container">
+         <h2>VOTER DETAILS</h2>
+         <form id="voting-form">
+           <label for="staff-id">STAFF ID:</label>
+           <input type="text" id="staff-id" name="staff-id" required><br><br>
+           <label for="surname">SURNAME:</label>
+           <input type="text" id="surname" name="surname" required><br><br>
+           <label for="middle-name">MIDDLE NAME (OPTIONAL):</label>
+           <input type="text" id="middle-name" name="middle-name"><br><br>
+           <label for="other-name">OTHER NAME:</label>
+           <input type="text" id="other-name" name="other-name" required><br><br>
+
+           <h2>VOTE FOR NOMINEES</h2>
+           <div id="parameters"></div>
+
+           <p id="error" class="error"></p>
+           <button type="button" onclick="clearForm()">CLEAR</button>
+           <button type="button" onclick="submitVotes()">SUBMIT VOTES</button>
+         </form>
+       </div>
+
+       <script>
+         const parameters = [
+           { name: "PUNCTUALITY", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "DRESSING", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "ATTITUDE TOWARDS WORK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "ATTITUDE TOWARDS COWORKERS", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "INNOVATIVE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "DISCIPLINE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+           { name: "WILLINGNESS TO ACCEPT ADDITIONAL TASK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] }
+         ];
+
+         const nominees = [
+           { name: "ELVIS AMENANO", image: "elvis-amenano.png" },
+           { name: "AMINATA TWUMASIWAA", image: "aminata-twumasiwaa.png" },
+           { name: "PHILOMENA ETORNAM DZIRASA", image: "philomena-etornam-dzirasa.png" },
+           { name: "ESSANDOH VICTORIA", image: "essandoh-victoria.png" }
+         ];
+
+         function populateForm() {
+           const parametersDiv = document.getElementById('parameters');
+           parameters.forEach(param => {
+             const paramDiv = document.createElement('div');
+             paramDiv.innerHTML = `<h3>${param.name}</h3>`;
+             const table = document.createElement('table');
+             table.innerHTML = `
+               <tr>
+                 <th>NOMINEE</th>
+                 ${param.scores.map(score => `<th>${score.label} (${score.value} point${score.value !== 1 ? 's' : ''})</th>`).join('')}
+               </tr>
+               ${nominees.map(nominee => `
+                 <tr>
+                   <td class="nominee-cell">
+                     <img src="${nominee.image}" alt="${nominee.name}">
+                     ${nominee.name}
+                   </td>
+                   ${param.scores.map(score => `
+                     <td>
+                       <input type="radio" name="${param.name}-${nominee.name}" value="${score.label}" required>
+                     </td>
+                   `).join('')}
+                 </tr>
+               `).join('')}
+             `;
+             paramDiv.appendChild(table);
+             parametersDiv.appendChild(paramDiv);
+           });
+         }
+
+         function clearForm() {
+           document.getElementById('voting-form').reset();
+           document.getElementById('error').style.display = 'none';
+         }
+
+         async function submitVotes() {
+           const staffId = document.getElementById('staff-id').value;
+           const surname = document.getElementById('surname').value;
+           const middleName = document.getElementById('middle-name').value;
+           const otherName = document.getElementById('other-name').value;
+           const errorDiv = document.getElementById('error');
+           errorDiv.style.display = 'none';
+
+           const votes = {};
+           const nomineeScores = {};
+
+           nominees.forEach(nominee => nomineeScores[nominee.name] = []);
+
+           for (const param of parameters) {
+             votes[param.name] = {};
+             nominees.forEach(nominee => {
+               const radio = document.querySelector(`input[name="${param.name}-${nominee.name}"]:checked`);
+               if (radio) {
+                 const scoreLabel = radio.value;
+                 const scoreObj = param.scores.find(s => s.label === scoreLabel);
+                 votes[param.name][nominee.name] = { label: scoreLabel, points: scoreObj.value };
+                 nomineeScores[nominee.name].push({ param: param.name, label: scoreLabel, points: scoreObj.value });
+               } else {
+                 errorDiv.textContent = `Error: Please assign a score to ${nominee.name} for ${param.name}.`;
+                 errorDiv.style.display = 'block';
+                 return;
+               }
+             });
+           }
+
+           for (const nominee of nominees) {
+             if (nomineeScores[nominee.name].length !== parameters.length) {
+               errorDiv.textContent = `Error: ${nominee.name} must be assigned a score for each parameter.`;
+               errorDiv.style.display = 'block';
+               return;
+             }
+             const uniqueScores = new Set(nomineeScores[nominee.name].map(score => score.label));
+             if (uniqueScores.size !== parameters.length) {
+               errorDiv.textContent = `Error: ${nominee.name} has been assigned the same score in multiple parameters.`;
+               errorDiv.style.display = 'block';
+               return;
+             }
+           }
+
+           const voterDetails = { staffId, surname, middleName, otherName };
+           try {
+             const response = await fetch('http://localhost:3000/submit-vote', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ voterDetails, votes })
+             });
+             const result = await response.json();
+             if (result.success) {
+               const scores = {};
+               nominees.forEach(nominee => scores[nominee.name] = 0);
+               Object.keys(votes).forEach(param => {
+                 Object.keys(votes[param]).forEach(nominee => {
+                   const { points } = votes[param][nominee];
+                   scores[nominee] += points;
+                 });
+               });
+               const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+               document.body.innerHTML = `<h2>THANK YOU FOR VOTING!</h2><p>WINNER: ${winner} WITH ${scores[winner]} POINTS!</p>`;
+             } else {
+               errorDiv.textContent = 'Error submitting vote. Please try again.';
+               errorDiv.style.display = 'block';
+             }
+           } catch (error) {
+             errorDiv.textContent = 'Error connecting to server. Please try again.';
+             errorDiv.style.display = 'block';
+           }
+         }
+
+         window.onload = populateForm;
+       </script>
+     </body>
+     </html>
