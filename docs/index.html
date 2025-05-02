@@ -290,7 +290,9 @@
     async function submitVotes() {
       const container = document.getElementById("container");
       try {
-        const response = await fetch('http://localhost:3000/submit-vote', {
+        const response = await fetch('https://voting-backend-a27g.onrender.com
+
+', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
