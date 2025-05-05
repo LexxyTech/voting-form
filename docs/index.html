@@ -290,9 +290,7 @@
     async function submitVotes() {
       const container = document.getElementById("container");
       try {
-        const response = await fetch('https://voting-backend-a27g.onrender.com
-
-', {
+        const response = await fetch('https://voting-backend-a27g.onrender.com/submit-vote', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -324,7 +322,7 @@
         }
       } catch (error) {
         console.error('Error submitting votes:', error);
-        container.innerHTML += `<p>Error submitting vote. Please try again.</p>`;
+        container.innerHTML += `<p>Error submitting vote. Please try again.</p>`; 
       }
     }
 
