@@ -1,240 +1,633 @@
+Thank you for sharing the updated `index.html` file for the Kwatire Government Hospital Staff Elections 2025 voting form. The form now includes a two-step process (voter details with a "Next" button, followed by voting), the character counter, and all previous features like accessibility, validation, and error handling. It looks ready for use, but let’s add one small improvement to enhance the user experience:
+
+### Improvement: Add a "Back" Button in Step 2
+- Currently, users can only clear the entire form to return to Step 1, which erases all data. Adding a "Back" button in Step 2 will allow users to return to Step 1 to edit voter details without losing their voting selections.
+
+Below is the updated `index.html` with the "Back" button added to Step 2.
+
+```html
 <!DOCTYPE html>
-     <html lang="en">
-     <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Kwatire Government Hospital Staff Elections 2025</title>
-       <style>
-         body {
-           font-family: Arial, sans-serif;
-           margin: 20px;
-           background-color: #f4f4f4;
-         }
-         header {
-           text-align: center;
-           padding: 20px;
-           background-color: #003087;
-           color: white;
-           border-radius: 5px;
-         }
-         #voting-form-container {
-           max-width: 900px;
-           margin: 0 auto;
-           background-color: white;
-           padding: 20px;
-           border-radius: 5px;
-           box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-         }
-         h2, h3 {
-           color: #003087;
-         }
-         label {
-           display: inline-block;
-           width: 150px;
-           font-weight: bold;
-         }
-         input[type="text"] {
-           padding: 5px;
-           margin-bottom: 10px;
-           width: 200px;
-         }
-         table {
-           width: 100%;
-           border-collapse: collapse;
-           margin-bottom: 20px;
-         }
-         th, td {
-           border: 1px solid #ddd;
-           padding: 8px;
-           text-align: center;
-         }
-         th {
-           background-color: #003087;
-           color: white;
-         }
-         .nominee-cell {
-           display: flex;
-           align-items: center;
-           justify-content: center;
-         }
-         .nominee-cell img {
-           width: 50px;
-           height: 50px;
-           margin-right: 10px;
-           border-radius: 50%;
-         }
-         button {
-           padding: 10px 20px;
-           margin: 10px 5px;
-           background-color: #003087;
-           color: white;
-           border: none;
-           border-radius: 5px;
-           cursor: pointer;
-         }
-         button:hover {
-           background-color: #0056b3;
-         }
-         .error {
-           color: red;
-           display: none;
-         }
-       </style>
-     </head>
-     <body>
-       <header>
-         <img src="ghs-logo.png" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
-         <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
-       </header>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kwatire Government Hospital Staff Elections 2025</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    header {
+      text-align: center;
+      padding: 20px;
+      background-color: #003087;
+      color: white;
+      border-radius: 5px;
+    }
+    #voting-form-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2, h3 {
+      color: #003087;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      padding: 5px;
+      margin-bottom: 10px;
+      width: 200px;
+    }
+    .counter {
+      font-size: 0.9em;
+      color: #666;
+      margin-left: 10px;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #003087;
+      color: white;
+    }
+    .nominee-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nominee-cell img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      background-color: #003087;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    .error {
+      color: red;
+      display: none;
+    }
+    .success {
+      color: green;
+      display: none;
+      font-weight: bold;
+    }
+    #resultsDisplay, .results-container {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+    }
+    #resultsDisplay p, .results-container p {
+      margin: 5px 0;
+      color: #003087;
+      font-weight: bold;
+    }
+    .back-link {
+      color: #003087;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="ghs-logo.png" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
+    <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
+  </header>
 
-       <div id="voting-form-container">
-         <h2>VOTER DETAILS</h2>
-         <form id="voting-form">
-           <label for="staff-id">STAFF ID:</label>
-           <input type="text" id="staff-id" name="staff-id" required><br><br>
-           <label for="surname">SURNAME:</label>
-           <input type="text" id="surname" name="surname" required><br><br>
-           <label for="middle-name">MIDDLE NAME (OPTIONAL):</label>
-           <input type="text" id="middle-name" name="middle-name"><br><br>
-           <label for="other-name">OTHER NAME:</label>
-           <input type="text" id="other-name" name="other-name" required><br><br>
+  <div id="voting-form-container">
+    <button onclick="fetchResults()" tabindex="0" aria-label="View accumulated results for the election">View Accumulated Results</button>
+    <div id="resultsDisplay" role="region" aria-live="polite"></div>
+    <div id="voting-form-steps">
+      <div id="step-1" class="step active">
+        <h2>Voter Details</h2>
+        <form id="voter-details-form" aria-label="Voter details for Kwatire Government Hospital Staff Elections 2025">
+          <label for="staff-id">Staff ID:</label>
+          <input type="text" id="staff-id" name="staff-id" required pattern="\d{5,10}" title="Staff ID must be a 5 to 10-digit number" aria-required="true" onblur="validateStaffId()" oninput="updateCounter()">
+          <span id="staff-id-counter" class="counter">0/10</span>
+          <span class="sr-only">Required: Staff ID must be a 5 to 10-digit number</span><br><br>
+          <label for="surname">Surname:</label>
+          <input type="text" id="surname" name="surname" required placeholder="Enter your Surname" aria-required="true">
+          <span class="sr-only">Required</span><br><br>
+          <label for="middle-name">Middle Name:</label>
+          <input type="text" id="middle-name" name="middle-name" placeholder="Enter your Middle Name"><br><br>
+          <label for="other-name">Other Name:</label>
+          <input type="text" id="other-name" name="other-name" required placeholder="Enter your Other Name" aria-required="true">
+          <span class="sr-only">Required</span><br><br>
+          <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to voting step">Next</button>
+        </form>
+        <p id="error" class="error" role="alert"></p>
+      </div>
+      <div id="step-2" class="step">
+        <h2>Vote for Nominees</h2>
+        <div id="parameters" role="group" aria-label="Nominee voting parameters"></div>
+        <p id="error" class="error" role="alert"></p>
+        <p id="success" class="success" role="status"></p>
+        <button type="button" onclick="showStep(1)" tabindex="0" aria-label="Go back to voter details">BACK</button>
+        <button type="button" onclick="clearForm()" tabindex="0" aria-label="Clear all form inputs">CLEAR</button>
+        <button type="button" id="submit-btn" onclick="submitVotes()" tabindex="0" aria-label="Submit your votes">SUBMIT VOTES</button>
+      </div>
+    </div>
+  </div>
 
-           <h2>VOTE FOR NOMINEES</h2>
-           <div id="parameters"></div>
+  <script>
+    const parameters = [
+      { name: "PUNCTUALITY", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "DRESSING", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "ATTITUDE TOWARDS WORK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "ATTITUDE TOWARDS COWORKERS", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "INNOVATIVE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "DISCIPLINE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
+      { name: "WILLINGNESS TO ACCEPT ADDITIONAL TASK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] }
+    ];
 
-           <p id="error" class="error"></p>
-           <button type="button" onclick="clearForm()">CLEAR</button>
-           <button type="button" onclick="submitVotes()">SUBMIT VOTES</button>
-         </form>
-       </div>
+    const nominees = [
+      { name: "ELVIS AMENANO", image: "elvis-amenano.png" },
+      { name: "AMINATA TWUMASIWAA", image: "aminata-twumasiwaa.png" },
+      { name: "PHILOMENA ETORNAM DZIRASA", image: "philomena-etornam-dzirasa.png" },
+      { name: "ESSANDOH VICTORIA", image: "essandoh-victoria.png" }
+    ];
 
-       <script>
-         const parameters = [
-           { name: "PUNCTUALITY", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "DRESSING", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "ATTITUDE TOWARDS WORK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "ATTITUDE TOWARDS COWORKERS", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "INNOVATIVE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "DISCIPLINE", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] },
-           { name: "WILLINGNESS TO ACCEPT ADDITIONAL TASK", scores: [{ label: "EXCELLENT", value: 4 }, { label: "BEST", value: 3 }, { label: "BETTER", value: 2 }, { label: "GOOD", value: 1 }] }
-         ];
+    let voterDetails = {};
 
-         const nominees = [
-           { name: "ELVIS AMENANO", image: "elvis-amenano.png" },
-           { name: "AMINATA TWUMASIWAA", image: "aminata-twumasiwaa.png" },
-           { name: "PHILOMENA ETORNAM DZIRASA", image: "philomena-etornam-dzirasa.png" },
-           { name: "ESSANDOH VICTORIA", image: "essandoh-victoria.png" }
-         ];
+    function populateForm() {
+      const parametersDiv = document.getElementById('parameters');
+      parameters.forEach(param => {
+        const paramDiv = document.createElement('div');
+        paramDiv.innerHTML = `<h3>${param.name}</h3>`;
+        const table = document.createElement('table');
+        table.setAttribute('role', 'grid');
+        table.setAttribute('aria-label', `${param.name} voting table`);
+        table.innerHTML = `
+          <tr>
+            <th scope="col">NOMINEE</th>
+            ${param.scores.map(score => `<th scope="col">${score.label} (${score.value} point${score.value !== 1 ? 's' : ''})</th>`).join('')}
+          </tr>
+          ${nominees.map(nominee => `
+            <tr>
+              <td class="nominee-cell" scope="row">
+                <img src="${nominee.image}" alt="${nominee.name}">
+                ${nominee.name}
+              </td>
+              ${param.scores.map(score => `
+                <td>
+                  <input type="radio" name="${param.name}-${nominee.name}" value="${score.label}" required id="${param.name}-${nominee.name}-${score.label}">
+                  <label for="${param.name}-${nominee.name}-${score.label}" class="sr-only">Score ${score.label} for ${nominee.name} in ${param.name}</label>
+                </td>
+              `).join('')}
+            </tr>
+          `).join('')}
+        `;
+        paramDiv.appendChild(table);
+        parametersDiv.appendChild(paramDiv);
+      });
+    }
 
-         function populateForm() {
-           const parametersDiv = document.getElementById('parameters');
-           parameters.forEach(param => {
-             const paramDiv = document.createElement('div');
-             paramDiv.innerHTML = `<h3>${param.name}</h3>`;
-             const table = document.createElement('table');
-             table.innerHTML = `
-               <tr>
-                 <th>NOMINEE</th>
-                 ${param.scores.map(score => `<th>${score.label} (${score.value} point${score.value !== 1 ? 's' : ''})</th>`).join('')}
-               </tr>
-               ${nominees.map(nominee => `
-                 <tr>
-                   <td class="nominee-cell">
-                     <img src="${nominee.image}" alt="${nominee.name}">
-                     ${nominee.name}
-                   </td>
-                   ${param.scores.map(score => `
-                     <td>
-                       <input type="radio" name="${param.name}-${nominee.name}" value="${score.label}" required>
-                     </td>
-                   `).join('')}
-                 </tr>
-               `).join('')}
-             `;
-             paramDiv.appendChild(table);
-             parametersDiv.appendChild(paramDiv);
-           });
-         }
+    function clearForm() {
+      if (confirm("Are you sure you want to clear the form? All entered data will be lost.")) {
+        document.getElementById('voter-details-form').reset();
+        document.getElementById('step-2').querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+        document.getElementById('error').style.display = 'none';
+        document.getElementById('success').style.display = 'none';
+        updateCounter(); // Reset counter
+        showStep(1);
+        voterDetails = {};
+      }
+    }
 
-         function clearForm() {
-           document.getElementById('voting-form').reset();
-           document.getElementById('error').style.display = 'none';
-         }
+    function validateStaffId() {
+      const staffId = document.getElementById('staff-id').value;
+      const errorDiv = document.getElementById('error');
+      const staffIdRegex = /^\d{5,10}$/;
+      if (staffId && !staffIdRegex.test(staffId)) {
+        errorDiv.textContent = 'Error: Staff ID must be a 5 to 10-digit number.';
+        errorDiv.style.display = 'block';
+      } else {
+        errorDiv.style.display = 'none';
+      }
+    }
 
-         async function submitVotes() {
-           const staffId = document.getElementById('staff-id').value;
-           const surname = document.getElementById('surname').value;
-           const middleName = document.getElementById('middle-name').value;
-           const otherName = document.getElementById('other-name').value;
-           const errorDiv = document.getElementById('error');
-           errorDiv.style.display = 'none';
+    function updateCounter() {
+      const staffId = document.getElementById('staff-id').value;
+      const counter = document.getElementById('staff-id-counter');
+      const length = staffId.length;
+      counter.textContent = `${length}/10`;
+      if (length > 10) {
+        counter.style.color = 'red';
+      } else {
+        counter.style.color = '#666';
+      }
+    }
 
-           const votes = {};
-           const nomineeScores = {};
+    function nextStep() {
+      const staffId = document.getElementById('staff-id').value;
+      const surname = document.getElementById('surname').value;
+      const middleName = document.getElementById('middle-name').value;
+      const otherName = document.getElementById('other-name').value;
+      const errorDiv = document.getElementById('error');
 
-           nominees.forEach(nominee => nomineeScores[nominee.name] = []);
+      errorDiv.style.display = 'none';
 
-           for (const param of parameters) {
-             votes[param.name] = {};
-             nominees.forEach(nominee => {
-               const radio = document.querySelector(`input[name="${param.name}-${nominee.name}"]:checked`);
-               if (radio) {
-                 const scoreLabel = radio.value;
-                 const scoreObj = param.scores.find(s => s.label === scoreLabel);
-                 votes[param.name][nominee.name] = { label: scoreLabel, points: scoreObj.value };
-                 nomineeScores[nominee.name].push({ param: param.name, label: scoreLabel, points: scoreObj.value });
-               } else {
-                 errorDiv.textContent = `Error: Please assign a score to ${nominee.name} for ${param.name}.`;
-                 errorDiv.style.display = 'block';
-                 return;
-               }
-             });
-           }
+      const staffIdRegex = /^\d{5,10}$/;
+      if (!staffIdRegex.test(staffId)) {
+        errorDiv.textContent = 'Error: Staff ID must be a 5 to 10-digit number.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (!surname) {
+        errorDiv.textContent = 'Error: Surname is required.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (!otherName) {
+        errorDiv.textContent = 'Error: Other Name is required.';
+        errorDiv.style.display = 'block';
+        return;
+      }
 
-           for (const nominee of nominees) {
-             if (nomineeScores[nominee.name].length !== parameters.length) {
-               errorDiv.textContent = `Error: ${nominee.name} must be assigned a score for each parameter.`;
-               errorDiv.style.display = 'block';
-               return;
-             }
-             const uniqueScores = new Set(nomineeScores[nominee.name].map(score => score.label));
-             if (uniqueScores.size !== parameters.length) {
-               errorDiv.textContent = `Error: ${nominee.name} has been assigned the same score in multiple parameters.`;
-               errorDiv.style.display = 'block';
-               return;
-             }
-           }
+      voterDetails = { staffId, surname, middleName, otherName };
+      showStep(2);
+      populateForm();
+    }
 
-           const voterDetails = { staffId, surname, middleName, otherName };
-           try {
-             const response = await fetch('http://localhost:3000/submit-vote', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ voterDetails, votes })
-             });
-             const result = await response.json();
-             if (result.success) {
-               const scores = {};
-               nominees.forEach(nominee => scores[nominee.name] = 0);
-               Object.keys(votes).forEach(param => {
-                 Object.keys(votes[param]).forEach(nominee => {
-                   const { points } = votes[param][nominee];
-                   scores[nominee] += points;
-                 });
-               });
-               const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-               document.body.innerHTML = `<h2>THANK YOU FOR VOTING!</h2><p>WINNER: ${winner} WITH ${scores[winner]} POINTS!</p>`;
-             } else {
-               errorDiv.textContent = 'Error submitting vote. Please try again.';
-               errorDiv.style.display = 'block';
-             }
-           } catch (error) {
-             errorDiv.textContent = 'Error connecting to server. Please try again.';
-             errorDiv.style.display = 'block';
-           }
-         }
+    function showStep(stepNumber) {
+      document.getElementById('step-1').classList.remove('active');
+      document.getElementById('step-2').classList.remove('active');
+      document.getElementById(`step-${stepNumber}`).classList.add('active');
+    }
 
-         window.onload = populateForm;
-       </script>
-     </body>
-     </html>
+    async function submitVotes() {
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const errorDiv = document.getElementById('error');
+      const successDiv = document.getElementById('success');
+      errorDiv.style.display = 'none';
+      successDiv.style.display = 'none';
+
+      const votes = {};
+      const nomineeScores = {};
+
+      nominees.forEach(nominee => nomineeScores[nominee.name] = []);
+
+      for (const param of parameters) {
+        votes[param.name] = {};
+        nominees.forEach(nominee => {
+          const radio = document.querySelector(`input[name="${param.name}-${nominee.name}"]:checked`);
+          if (radio) {
+            const scoreLabel = radio.value;
+            const scoreObj = param.scores.find(s => s.label === scoreLabel);
+            votes[param.name][nominee.name] = { label: scoreLabel, points: scoreObj.value };
+            nomineeScores[nominee.name].push({ param: param.name, label: scoreLabel, points: scoreObj.value });
+          } else {
+            errorDiv.textContent = `Error: Please assign a score to ${nominee.name} for ${param.name}.`;
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SUBMIT VOTES';
+            return;
+          }
+        });
+      }
+
+      if (errorDiv.style.display === 'block') return;
+
+      for (const nominee of nominees) {
+        if (nomineeScores[nominee.name].length !== parameters.length) {
+          errorDiv.textContent = `Error: ${nominee.name} must be assigned a score for each parameter.`;
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT VOTES';
+          return;
+        }
+        const uniqueScores = new Set(nomineeScores[nominee.name].map(score => score.label));
+        if (uniqueScores.size !== parameters.length) {
+          errorDiv.textContent = `Error: ${nominee.name} has been assigned the same score in multiple parameters.`;
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT VOTES';
+          return;
+        }
+      }
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+
+        const response = await fetch('https://voting-backend-a27g.onrender.com/submit-vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voterDetails, votes }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (response.status === 400) {
+          const result = await response.json();
+          errorDiv.textContent = result.message || 'Duplicate vote detected for this Staff ID.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT VOTES';
+          return;
+        }
+        const result = await response.json();
+        if (result.success) {
+          const response = await fetch('https://voting-backend-a27g.onrender.com/results');
+          const allVotes = await response.json();
+          let scores = {
+            "ELVIS AMENANO": 0,
+            "ESSANDOH VICTORIA": 0,
+            "AMINATA TWUMASIWAA": 0,
+            "PHILOMENA ETORNAM DZIRASA": 0
+          };
+          allVotes.forEach(vote => {
+            Object.keys(vote.votes).forEach(category => {
+              Object.entries(vote.votes[category]).forEach(([nominee, score]) => {
+                scores[nominee] += score;
+              });
+            });
+          });
+          const winner = Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+          const resultsPage = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Kwatire Government Hospital Staff Elections 2025</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  margin: 20px;
+                  background-color: #f4f4f4;
+                }
+                header {
+                  text-align: center;
+                  padding: 20px;
+                  background-color: #003087;
+                  color: white;
+                  border-radius: 5px;
+                }
+                #voting-form-container {
+                  max-width: 900px;
+                  margin: 0 auto;
+                  background-color: white;
+                  padding: 20px;
+                  border-radius: 5px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                h2 {
+                  color: #003087;
+                }
+                .results-container {
+                  margin: 10px 0;
+                  padding: 10px;
+                  background-color: #f9f9f9;
+                  border-radius: 5px;
+                }
+                .results-container p {
+                  margin: 5px 0;
+                  color: #003087;
+                  font-weight: bold;
+                }
+                .back-link {
+                  color: #003087;
+                  text-decoration: none;
+                  font-weight: bold;
+                }
+                .back-link:hover {
+                  text-decoration: underline;
+                }
+              </style>
+            </head>
+            <body>
+              <header>
+                <img src="ghs-logo.png" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
+                <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
+              </header>
+              <div id="voting-form-container">
+                <h2>THANK YOU FOR VOTING!</h2>
+                <div class="results-container" role="region" aria-live="polite">
+                  <p>ELVIS AMENANO: ${scores["ELVIS AMENANO"]} points</p>
+                  <p>AMINATA TWUMASIWAA: ${scores["AMINATA TWUMASIWAA"]} points</p>
+                  <p>PHILOMENA ETORNAM DZIRASA: ${scores["PHILOMENA ETORNAM DZIRASA"]} points</p>
+                  <p>ESSANDOH VICTORIA: ${scores["ESSANDOH VICTORIA"]} points</p>
+                  <p>Winner: ${winner} with ${scores[winner]} points!</p>
+                </div>
+                <p><a href="https://voting-form-2025.netlify.app" class="back-link" tabindex="0">Back to Voting Form</a></p>
+              </div>
+            </body>
+            </html>
+          `;
+          successDiv.textContent = 'Vote submitted successfully! Redirecting...';
+          successDiv.style.display = 'block';
+          setTimeout(() => {
+            window.location.replace('data:text/html;charset=utf-8,' + encodeURIComponent(resultsPage));
+          }, 2000); // 2-second delay before redirect
+        } else {
+          errorDiv.textContent = result.message || 'Error submitting vote. Please try again.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT VOTES';
+        }
+      } catch (error) {
+        errorDiv.textContent = error.name === 'AbortError' ? 'Error: Server took too long to respond (timeout after 10 seconds). Please try again later.' : 'Error connecting to server. Please try again.';
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SUBMIT VOTES';
+      }
+    }
+
+    async function fetchResults() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10-second timeout
+
+        const response = await fetch('https://voting-backend-a27g.onrender.com/results', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        const votes = await response.json();
+        let points = {
+          "ELVIS AMENANO": 0,
+          "ESSANDOH VICTORIA": 0,
+          "AMINATA TWUMASIWAA": 0,
+          "PHILOMENA ETORNAM DZIRASA": 0
+        };
+        votes.forEach(vote => {
+          Object.keys(vote.votes).forEach(category => {
+            Object.entries(vote.votes[category]).forEach(([nominee, score]) => {
+              points[nominee] += score;
+            });
+          });
+        });
+        const winner = Object.entries(points).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+        document.getElementById('resultsDisplay').innerHTML = `
+          <p>ELVIS AMENANO: ${points["ELVIS AMENANO"]} points</p>
+          <p>AMINATA TWUMASIWAA: ${points["AMINATA TWUMASIWAA"]} points</p>
+          <p>PHILOMENA ETORNAM DZIRASA: ${points["PHILOMENA ETORNAM DZIRASA"]} points</p>
+          <p>ESSANDOH VICTORIA: ${points["ESSANDOH VICTORIA"]} points</p>
+          <p>Winner: ${winner} with ${points[winner]} points!</p>
+        `;
+      } catch (error) {
+        document.getElementById('resultsDisplay').innerHTML = error.name === 'AbortError' ? 'Error: Server took too long to respond (timeout after 10 seconds). Please try again later.' : 'Error fetching results.';
+        console.error('Fetch Results Error:', error.message);
+      }
+    }
+
+    window.onload = () => {
+      document.getElementById('step-1').classList.add('active');
+    };
+  </script>
+</body>
+</html>
+```
+
+---
+
+### Steps to Update Your File
+1. **Open `index.html` in Notepad**:
+   - In Command Prompt, navigate to your project directory:
+     ```
+     cd C:\Users\hp\Documents\voting-form-2025
+     ```
+   - Open `index.html`:
+     ```
+     notepad index.html
+     ```
+
+2. **Replace the Entire Content**:
+   - Select all the existing content in Notepad (`Ctrl + A`).
+   - Copy the entire code from the ````` section above (from `<!DOCTYPE html>` to `</html>`).
+   - Paste it into Notepad (`Ctrl + V`), replacing the old content.
+
+3. **Save and Close**:
+   - Press **Ctrl + S** to save `index.html`.
+   - Press **Ctrl + W** or click the **X** to close Notepad.
+
+---
+
+### Step 4: Commit and Push the Changes
+1. **Stage the Changes**:
+   - In Command Prompt:
+     ```
+     git add index.html
+     ```
+
+2. **Commit the Changes**:
+   - Create a commit:
+     ```
+     git commit -m "Add Back button to Step 2 for voter details editing"
+     ```
+
+3. **Push to GitHub**:
+   - Push the changes:
+     ```
+     git push origin main
+     ```
+   - Confirm the push with output like:
+     ```
+     To https://github.com/LexxyTech/voting-form-2025.git
+        ghi9012..jkl3456  main -> main
+     ```
+
+---
+
+### Step 5: Redeploy on Netlify
+1. **Log in to Netlify**:
+   - Go to `https://app.netlify.com` and log in.
+
+2. **Select Your Site**:
+   - Click on `voting-form-2025` under **"Sites"**.
+
+3. **Trigger Deploy**:
+   - Go to the **"Deploys"** tab.
+   - If the deploy doesn’t start automatically, click **"Trigger deploy"** > **"Deploy site"**.
+
+4. **Monitor Deployment**:
+   - Wait for the deploy to complete (1-2 minutes). Look for "Published" with a green checkmark.
+
+5. **Verify the Live Site**:
+   - Visit `https://voting-form-2025.netlify.app`.
+   - Test the "Back" button by entering voter details (e.g., Staff ID: "1234573", Surname: "Test13", Other Name: "User13"), clicking "Next", then clicking "BACK" to return to Step 1.
+   - Edit the details (e.g., change Staff ID to "1234574") and proceed to Step 2 again.
+
+---
+
+### Step 6: Test the Updated Form
+1. **Step 1 Test**:
+   - Enter Staff ID: "1234573", Surname: "Test13", Other Name: "User13", click "Next".
+   - Confirm Step 2 appears with voting options.
+
+2. **Back Button Test**:
+   - In Step 2, click "BACK".
+   - Verify you return to Step 1 and the voter details are still populated (e.g., Staff ID: "1234573").
+   - Edit the Staff ID to "1234574" and click "Next" again.
+   - Confirm voting selections are preserved (if any were made).
+
+3. **Submission Test**:
+   - Assign scores (e.g., all "EXCELLENT" for "ELVIS AMENANO") and click "SUBMIT VOTES".
+   - Confirm the success message and redirect to the results page.
+
+4. **Accessibility Test**:
+   - Use NVDA to ensure the "BACK" button is announced and functional for screen reader users.
+
+---
+
+### Step 7: Share Results
+- After submitting the test vote with Staff ID "1234574", share the results on the redirected page.
+- Click "View Accumulated Results" on the form page and share the displayed totals.
+- Visit `https://voting-backend-a27g.onrender.com/results` to confirm the new vote and share the JSON response.
+
+---
+
+### Final Notes
+The "Back" button makes the form more user-friendly by allowing corrections to voter details without losing voting data. Replace your `index.html`, deploy, and test as described. Once confirmed, you can proceed with the voting process for the Kwatire Government Hospital Staff Elections 2025. Let me know if you need further adjustments!
