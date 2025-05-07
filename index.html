@@ -418,13 +418,6 @@
       "Essandoh Victoria"
     ];
 
-    const scores = {
-      "GOOD": 1,
-      "BETTER": 2,
-      "BEST": 3,
-      "EXCELLENT": 4
-    };
-
     let voterDetails = {};
     let votes = {};
 
@@ -491,7 +484,7 @@
         const param = parameters[stepNum - 2].name;
         votes[param] = {};
 
-        for (let score in scores) {
+        for (let score in { GOOD: 1, BETTER: 1, BEST: 1, EXCELLENT: 1 }) {
           const selected = document.querySelector(`input[name="${param}-${score}"]:checked`);
           if (!selected) {
             errorDiv.textContent = `Error: Please assign a ${score} score for ${param}.`;
@@ -561,106 +554,19 @@
         }
         const result = await response.json();
         if (result.success) {
-          const response = await fetch('https://voting-backend-a27g.onrender.com/results');
-          const allVotes = await response.json();
-          let scores = {
-            "Elvis Amenano": 0,
-            "Essandoh Victoria": 0,
-            "Aminata Twumasiwaa": 0,
-            "Philomena Etornam Dzirasah": 0
-          };
-          allVotes.forEach(vote => {
-            Object.keys(vote.votes).forEach(category => {
-              Object.entries(vote.votes[category]).forEach(([score, nominee]) => {
-                scores[nominee] += scores[score] || 0;
-              });
-            });
-          });
-          const winner = Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b)[0];
-          const resultsPage = `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Kwatire Government Hospital Staff Elections 2025</title>
-              <style>
-                body {
-                  font-family: Arial, sans-serif;
-                  margin: 20px;
-                  background-color: #f4f4f4;
-                }
-                header {
-                  text-align: center;
-                  padding: 20px;
-                  background-color: #003087;
-                  color: white;
-                  border-radius: 5px;
-                }
-                #voting-form-container {
-                  max-width: 900px;
-                  margin: 0 auto;
-                  background-color: white;
-                  padding: 20px;
-                  border-radius: 5px;
-                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                }
-                h2 {
-                  color: #003087;
-                }
-                .results-container {
-                  margin: 10px 0;
-                  padding: 10px;
-                  background-color: #f9f9f9;
-                  border-radius: 5px;
-                }
-                .results-container p {
-                  margin: 5px 0;
-                  color: #003087;
-                  font-weight: bold;
-                }
-                .back-link {
-                  color: #003087;
-                  text-decoration: none;
-                  font-weight: bold;
-                }
-                .back-link:hover {
-                  text-decoration: underline;
-                }
-              </style>
-            </head>
-            <body>
-              <header>
-                <img src="ghs-logo.png" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
-                <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
-              </header>
-              <div id="voting-form-container">
-                <h2>THANK YOU FOR VOTING!</h2>
-                <div class="results-container" role="region" aria-live="polite">
-                  <p>Elvis Amenano: ${scores["Elvis Amenano"]} points</p>
-                  <p>Aminata Twumasiwaa: ${scores["Aminata Twumasiwaa"]} points</p>
-                  <p>Philomena Etornam Dzirasah: ${scores["Philomena Etornam Dzirasah"]} points</p>
-                  <p>Essandoh Victoria: ${scores["Essandoh Victoria"]} points</p>
-                  <p>Winner: ${winner} with ${scores[winner]} points!</p>
-                </div>
-                <p><a href="https://voting-form-2025.netlify.app" class="back-link" tabindex="0">Back to Voting Form</a></p>
-              </div>
-            </body>
-            </html>
-          `;
-          successDiv.textContent = 'Vote submitted successfully! Redirecting...';
+          successDiv.textContent = 'Vote submitted successfully! Redirecting to results...';
           successDiv.style.display = 'block';
           setTimeout(() => {
-            window.location.replace('data:text/html;charset=utf-8,' + encodeURIComponent(resultsPage));
+            window.location.href = 'https://voting-backend-a27g.onrender.com/results';
           }, 2000);
         } else {
-          errorDiv.textContent = result.message || 'Error submitting vote. Please try again.';
+          errorDiv.textContent = 'Error submitting vote. Please try again.';
           errorDiv.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.textContent = 'SUBMIT VOTES';
         }
       } catch (error) {
-        errorDiv.textContent = error.name === 'AbortError' ? 'Error: Server took too long to respond (timeout after 10 seconds). Please try again later.' : 'Error connecting to server. Please try again.';
+        errorDiv.textContent = 'Network error. Please check your connection and try again.';
         errorDiv.style.display = 'block';
         submitBtn.disabled = false;
         submitBtn.textContent = 'SUBMIT VOTES';
@@ -669,54 +575,44 @@
 
     async function fetchResults() {
       const resultsDisplay = document.getElementById('resultsDisplay');
-      resultsDisplay.innerHTML = 'Loading results...';
+      resultsDisplay.innerHTML = '<p>Loading results...</p>';
 
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const response = await fetch('https://voting-backend-a27g.onrender.com/results');
+        const votes = await response.json();
 
-        const response = await fetch('https://voting-backend-a27g.onrender.com/results', { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!votes || votes.length === 0) {
+          resultsDisplay.innerHTML = '<p>No votes recorded yet.</p>';
+          return;
         }
 
-        const votes = await response.json();
-        let points = {
+        // Initialize score tally for each nominee
+        const nomineeScores = {
           "Elvis Amenano": 0,
-          "Essandoh Victoria": 0,
           "Aminata Twumasiwaa": 0,
-          "Philomena Etornam Dzirasah": 0
+          "Philomena Etornam Dzirasah": 0,
+          "Essandoh Victoria": 0
         };
 
+        // Sum scores for each nominee across all votes and categories
         votes.forEach(vote => {
-          Object.keys(vote.votes).forEach(category => {
-            const categoryVotes = vote.votes[category];
-            Object.entries(categoryVotes).forEach(([scoreLabel, nominee]) => {
-              const pointsForScore = scores[scoreLabel] || 0;
-              points[nominee] += pointsForScore;
-            });
+          parameters.forEach(param => {
+            const categoryVotes = vote.votes[param.name];
+            for (let nominee in categoryVotes) {
+              nomineeScores[nominee] += categoryVotes[nominee];
+            }
           });
         });
 
-        const winner = Object.entries(points).reduce((a, b) => a[1] > b[1] ? a : b)[0];
-        resultsDisplay.innerHTML = `
-          <p>Elvis Amenano: ${points["Elvis Amenano"]} points</p>
-          <p>Aminata Twumasiwaa: ${points["Aminata Twumasiwaa"]} points</p>
-          <p>Philomena Etornam Dzirasah: ${points["Philomena Etornam Dzirasah"]} points</p>
-          <p>Essandoh Victoria: ${points["Essandoh Victoria"]} points</p>
-          <p>Winner: ${winner} with ${points[winner]} points!</p>
-        `;
+        // Display results
+        resultsDisplay.innerHTML = '<h3>Accumulated Results</h3>';
+        for (let nominee in nomineeScores) {
+          resultsDisplay.innerHTML += `<p>${nominee}: ${nomineeScores[nominee]} points</p>`;
+        }
       } catch (error) {
-        console.error('Fetch Results Error:', error);
-        resultsDisplay.innerHTML = error.name === 'AbortError' ? 'Error: Server took too long to respond (timeout after 10 seconds). Please try again later.' : `Error fetching results: ${error.message}`;
+        resultsDisplay.innerHTML = '<p>Error fetching results. Please try again later.</p>';
       }
     }
-
-    window.onload = () => {
-      document.getElementById('step-1').classList.add('active');
-    };
   </script>
 </body>
 </html>
