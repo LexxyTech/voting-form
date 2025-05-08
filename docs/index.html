@@ -1,332 +1,630 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kwatire Government Hospital Staff Elections 2025</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .header {
-      background-color: #28a745;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .header img {
-      width: 100px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .header h1 {
-      display: inline;
-      font-size: 24px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .form-group input {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-    }
-    .parameter {
-      color: #8b0000;
-      font-weight: bold;
-    }
-    .score-group {
-      margin: 15px 0;
-      border: 1px solid #ddd;
-      padding: 10px;
-      border-radius: 5px;
-      position: relative;
-    }
-    .score-group h3 {
-      margin: 0 0 10px 0;
-    }
-    .score-group label {
-      display: block;
-      margin: 5px 0;
-      padding: 5px;
-      border-radius: 3px;
-    }
-    .score-group input[type="radio"] {
-      margin-right: 10px;
-    }
-    .score-group input[type="radio"]:checked + span {
-      background-color: #e0ffe0;
-      padding: 3px 5px;
-      border-radius: 3px;
-    }
-    .clear-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 3px;
-    }
-    .clear-btn:hover {
-      background-color: #c82333;
-    }
-    .nominee img {
-      width: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .winner {
-      color: #ffd700;
-      font-weight: bold;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-  </style>
-</head>
-<body>
-  <div class="container" id="container"></div>
-  <script>
-    const parameters = [
-      "PUNCTUALITY",
-      "ATTITUDE TOWARDS WORK",
-      "ATTITUDE TOWARDS COWORKERS",
-      "DISCIPLINE",
-      "INNOVATIVE",
-      "DRESSING",
-      "WILLINGNESS TO ACCEPT ADDITIONAL TASK"
-    ];
-    const scores = [
-      { label: "GOOD", value: 1 },
-      { label: "BETTER", value: 2 },
-      { label: "BEST", value: 3 },
-      { label: "EXCELLENT", value: 4 }
-    ];
-    const nominees = [
-      { name: "Elvis Amenano", photo: "https://i.imgur.com/KzRmllu.jpg" },
-      { name: "Aminata Twumasiwaa", photo: "https://i.imgur.com/WwmfmHp.jpg" },
-      { name: "Philomena Etornam Dzirasah", photo: "https://i.imgur.com/quvozoC.jpg" },
-      { name: "Essandoh Victoria", photo: "https://i.imgur.com/DE0EZ15.jpg" }
-    ];
-    let step = 0;
-    let voterDetails = { staffId: "", surname: "", middleName: "", otherName: "" };
-    let votes = {};
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Kwatire Government Hospital Staff Elections 2025</title>
+     <style>
+       body {
+         font-family: Arial, sans-serif;
+         margin: 20px;
+         background-color: #f4f4f4;
+       }
+       header {
+         text-align: center;
+         padding: 20px;
+         background-color: #003087;
+         color: white;
+         border-radius: 5px;
+       }
+       #voting-form-container {
+         max-width: 900px;
+         margin: 0 auto;
+         background-color: white;
+         padding: 20px;
+         border-radius: 5px;
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+       }
+       .progress {
+         font-size: 1.1em;
+         color: #003087;
+         font-weight: bold;
+         margin-bottom: 10px;
+       }
+       h2, h3 {
+         color: #003087;
+       }
+       label {
+         display: inline-block;
+         width: 150px;
+         font-weight: bold;
+       }
+       input[type="text"] {
+         padding: 5px;
+         margin-bottom: 10px;
+         width: 200px;
+       }
+       .counter {
+         font-size: 0.9em;
+         color: #666;
+         margin-left: 10px;
+       }
+       .step {
+         display: none;
+       }
+       .step.active {
+         display: block;
+       }
+       .nominee-option {
+         margin: 10px 0;
+       }
+       button {
+         padding: 10px 20px;
+         margin: 10px 5px;
+         background-color: #003087;
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+       }
+       button:disabled {
+         background-color: #cccccc;
+         cursor: not-allowed;
+       }
+       button:hover:not(:disabled) {
+         background-color: #0056b3;
+       }
+       .error {
+         color: red;
+         display: none;
+       }
+       .success {
+         color: green;
+         display: none;
+         font-weight: bold;
+       }
+       #resultsDisplay, .results-container {
+         margin: 10px 0;
+         padding: 10px;
+         background-color: #f9f9f9;
+         border-radius: 5px;
+       }
+       #resultsDisplay p, .results-container p {
+         margin: 5px 0;
+         color: #003087;
+         font-weight: bold;
+       }
+       .back-link {
+         color: #003087;
+         text-decoration: none;
+         font-weight: bold;
+       }
+       .back-link:hover {
+         text-decoration: underline;
+       }
+       .sr-only {
+         position: absolute;
+         width: 1px;
+         height: 1px;
+         padding: 0;
+         margin: -1px;
+         overflow: hidden;
+         clip: rect(0, 0, 0, 0);
+         border: 0;
+       }
+     </style>
+   </head>
+   <body>
+     <header>
+       <img src="https://i.imgur.com/jM246HZ.jpg" alt="Ghana Health Service Logo" style="width: 150px; height: auto;">
+       <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
+     </header>
 
-    function render() {
-      const container = document.getElementById("container");
-      container.innerHTML = `
-        <div class="header">
-          <img src="https://i.imgur.com/jM246HZ.jpg" alt="Ghana Health Service Logo">
-          <h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MARCH)</h1>
-        </div>
-      `;
+     <div id="voting-form-container">
+       <button onclick="fetchResults()" tabindex="0" aria-label="View accumulated results for the election">View Accumulated Results</button>
+       <div id="resultsDisplay" role="region" aria-live="polite"></div>
+       <div id="voting-form-steps">
+         <div id="step-1" class="step active">
+           <div class="progress">Step 1 of 9</div>
+           <h2>Voter Details</h2>
+           <form id="voter-details-form" aria-label="Voter details for Kwatire Government Hospital Staff Elections 2025">
+             <label for="staff-id">Staff ID:</label>
+             <input type="text" id="staff-id" name="staff-id" required pattern="\d{5,10}" title="Staff ID must be a 5 to 10-digit number" aria-required="true" onblur="validateStaffId()" oninput="updateCounter()" placeholder="Enter your Staff ID">
+             <span id="staff-id-counter" class="counter">0/10</span>
+             <span class="sr-only">Required: Staff ID must be a 5 to 10-digit number</span><br><br>
+             <label for="surname">Surname:</label>
+             <input type="text" id="surname" name="surname" required placeholder="Enter your Surname" aria-required="true">
+             <span class="sr-only">Required</span><br><br>
+             <label for="middle-name">Middle Name:</label>
+             <input type="text" id="middle-name" name="middle-name" placeholder="Enter your Middle Name"><br><br>
+             <label for="other-name">Other Name:</label>
+             <input type="text" id="other-name" name="other-name" required placeholder="Enter your Other Name" aria-required="true">
+             <span class="sr-only">Required</span><br><br>
+             <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to voting step">Next</button>
+           </form>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-2" class="step">
+           <div class="progress">Step 2 of 9</div>
+           <h2>Vote for PUNCTUALITY</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="PUNCTUALITY-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="PUNCTUALITY-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="PUNCTUALITY-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="PUNCTUALITY-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('PUNCTUALITY-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="PUNCTUALITY-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="PUNCTUALITY-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="PUNCTUALITY-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="PUNCTUALITY-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('PUNCTUALITY-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="PUNCTUALITY-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="PUNCTUALITY-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="PUNCTUALITY-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="PUNCTUALITY-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('PUNCTUALITY-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="PUNCTUALITY-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="PUNCTUALITY-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="PUNCTUALITY-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="PUNCTUALITY-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('PUNCTUALITY-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-3" class="step">
+           <div class="progress">Step 3 of 9</div>
+           <h2>Vote for DRESSING</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="DRESSING-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="DRESSING-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DRESSING-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DRESSING-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DRESSING-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DRESSING-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="DRESSING-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DRESSING-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DRESSING-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DRESSING-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DRESSING-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="DRESSING-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DRESSING-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DRESSING-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DRESSING-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DRESSING-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="DRESSING-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DRESSING-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DRESSING-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DRESSING-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-4" class="step">
+           <div class="progress">Step 4 of 9</div>
+           <h2>Vote for ATTITUDE TOWARDS WORK</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS WORK-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS WORK-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS WORK-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS WORK-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS WORK-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-5" class="step">
+           <div class="progress">Step 5 of 9</div>
+           <h2>Vote for ATTITUDE TOWARDS COWORKERS</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS COWORKERS-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS COWORKERS-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS COWORKERS-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="ATTITUDE TOWARDS COWORKERS-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('ATTITUDE TOWARDS COWORKERS-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-6" class="step">
+           <div class="progress">Step 6 of 9</div>
+           <h2>Vote for INNOVATIVE</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="INNOVATIVE-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="INNOVATIVE-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="INNOVATIVE-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="INNOVATIVE-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('INNOVATIVE-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="INNOVATIVE-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="INNOVATIVE-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="INNOVATIVE-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="INNOVATIVE-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('INNOVATIVE-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="INNOVATIVE-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="INNOVATIVE-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="INNOVATIVE-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="INNOVATIVE-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('INNOVATIVE-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="INNOVATIVE-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="INNOVATIVE-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="INNOVATIVE-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="INNOVATIVE-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('INNOVATIVE-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-7" class="step">
+           <div class="progress">Step 7 of 9</div>
+           <h2>Vote for DISCIPLINE</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="DISCIPLINE-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="DISCIPLINE-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DISCIPLINE-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DISCIPLINE-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DISCIPLINE-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DISCIPLINE-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="DISCIPLINE-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DISCIPLINE-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DISCIPLINE-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DISCIPLINE-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DISCIPLINE-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="DISCIPLINE-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DISCIPLINE-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DISCIPLINE-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DISCIPLINE-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="DISCIPLINE-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="DISCIPLINE-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="DISCIPLINE-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="DISCIPLINE-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('DISCIPLINE-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-8" class="step">
+           <div class="progress">Step 8 of 9</div>
+           <h2>Vote for WILLINGNESS TO ACCEPT ADDITIONAL TASK</h2>
+           <p>Please assign each score to a different nominee:</p>
+           <div class="nominee-option">
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-GOOD" value="Elvis Amenano" required> GOOD (1) - Elvis Amenano</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-GOOD" value="Aminata Twumasiwaa"> GOOD (1) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-GOOD" value="Philomena Etornam Dzirasah"> GOOD (1) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-GOOD" value="Essandoh Victoria"> GOOD (1) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('WILLINGNESS TO ACCEPT ADDITIONAL TASK-GOOD')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BETTER" value="Elvis Amenano" required> BETTER (2) - Elvis Amenano</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BETTER" value="Aminata Twumasiwaa"> BETTER (2) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BETTER" value="Philomena Etornam Dzirasah"> BETTER (2) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BETTER" value="Essandoh Victoria"> BETTER (2) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('WILLINGNESS TO ACCEPT ADDITIONAL TASK-BETTER')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BEST" value="Elvis Amenano" required> BEST (3) - Elvis Amenano</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BEST" value="Aminata Twumasiwaa"> BEST (3) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BEST" value="Philomena Etornam Dzirasah"> BEST (3) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-BEST" value="Essandoh Victoria"> BEST (3) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('WILLINGNESS TO ACCEPT ADDITIONAL TASK-BEST')">Clear</button>
+           </div>
+           <div class="nominee-option">
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-EXCELLENT" value="Elvis Amenano" required> EXCELLENT (4) - Elvis Amenano</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-EXCELLENT" value="Aminata Twumasiwaa"> EXCELLENT (4) - Aminata Twumasiwaa</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-EXCELLENT" value="Philomena Etornam Dzirasah"> EXCELLENT (4) - Philomena Etornam Dzirasah</label>
+             <label><input type="radio" name="WILLINGNESS TO ACCEPT ADDITIONAL TASK-EXCELLENT" value="Essandoh Victoria"> EXCELLENT (4) - Essandoh Victoria</label>
+             <button type="button" onclick="clearSelection('WILLINGNESS TO ACCEPT ADDITIONAL TASK-EXCELLENT')">Clear</button>
+           </div>
+           <button type="button" onclick="nextStep()" tabindex="0" aria-label="Proceed to next voting step">Next</button>
+           <p id="error" class="error" role="alert"></p>
+         </div>
+         <div id="step-9" class="step">
+           <div class="progress">Step 9 of 9</div>
+           <h2>Submit Your Votes</h2>
+           <p>Review your selections and submit your votes.</p>
+           <button type="button" id="submit-btn" onclick="submitVotes()" tabindex="0" aria-label="Submit your votes">SUBMIT VOTES</button>
+           <p id="error" class="error" role="alert"></p>
+           <p id="success" class="success" role="status"></p>
+         </div>
+       </div>
+     </div>
 
-      if (step === 0) {
-        container.innerHTML += `
-          <h2>Voter Details</h2>
-          <div class="form-group">
-            <label for="staffId">Staff ID</label>
-            <input type="text" id="staffId" placeholder="Enter your Staff ID">
-          </div>
-          <div class="form-group">
-            <label for="surname">Surname</label>
-            <input type="text" id="surname" placeholder="Enter your Surname">
-          </div>
-          <div class="form-group">
-            <label for="middleName">Middle Name</label>
-            <input type="text" id="middleName" placeholder="Enter your Middle Name">
-          </div>
-          <div class="form-group">
-            <label for="otherName">Other Name</label>
-            <input type="text" id="otherName" placeholder="Enter your Other Name">
-          </div>
-          <button onclick="nextStep()">Next</button>
-        `;
-      } else if (step > 0 && step <= parameters.length) {
-        const paramIndex = step - 1;
-        const parameter = parameters[paramIndex];
-        const currentVotes = votes[parameter] || {};
-        container.innerHTML += `
-          <h2>Vote for ${parameter}</h2>
-          <p class="parameter">${parameter}</p>
-          <p>Please assign each score to a different nominee:</p>
-          ${scores.map(score => `
-            <div class="score-group">
-              <h3>${score.label} (${score.value})</h3>
-              <button class="clear-btn" onclick="clearScore('${parameter}', ${score.value}, ${paramIndex})">Clear</button>
-              ${nominees.map(nominee => {
-                const isChecked = currentVotes[nominee.name] === score.value;
-                const isDisabled = Object.keys(currentVotes).includes(nominee.name) && !isChecked;
-                return `
-                  <label>
-                    <input type="radio" 
-                           name="score-${score.value}-${paramIndex}" 
-                           value="${nominee.name}" 
-                           ${isChecked ? 'checked' : ''} 
-                           ${isDisabled ? 'disabled' : ''} 
-                           onchange="recordVote('${parameter}', '${nominee.name}', ${score.value}, ${paramIndex})">
-                    <span class="nominee">
-                      <img src="${nominee.photo}" alt="${nominee.name}">
-                      ${nominee.name}
-                    </span>
-                  </label>
-                `;
-              }).join('')}
-            </div>
-          `).join('')}
-          <button onclick="nextStep()">Next</button>
-        `;
-      } else if (step > parameters.length) {
-        submitVotes();
-      }
-    }
+     <script>
+       const parameters = [
+         { name: "PUNCTUALITY" },
+         { name: "DRESSING" },
+         { name: "ATTITUDE TOWARDS WORK" },
+         { name: "ATTITUDE TOWARDS COWORKERS" },
+         { name: "INNOVATIVE" },
+         { name: "DISCIPLINE" },
+         { name: "WILLINGNESS TO ACCEPT ADDITIONAL TASK" }
+       ];
 
-    function nextStep() {
-      if (step === 0) {
-        voterDetails.staffId = document.getElementById("staffId").value || "";
-        voterDetails.surname = document.getElementById("surname").value || "";
-        voterDetails.middleName = document.getElementById("middleName").value || "";
-        voterDetails.otherName = document.getElementById("otherName").value || "";
-        if (!voterDetails.staffId || !voterDetails.surname) {
-          alert("Please fill in Staff ID and Surname.");
-          return;
-        }
-      } else if (step > 0 && step <= parameters.length) {
-        const paramIndex = step - 1;
-        const parameter = parameters[paramIndex];
-        const currentVotes = votes[parameter] || {};
-        const assignedNominees = new Set(Object.keys(currentVotes));
-        const assignedScores = new Set(Object.values(currentVotes));
-        if (assignedScores.size !== scores.length) {
-          alert("Please assign all scores (GOOD, BETTER, BEST, EXCELLENT) to a nominee.");
-          return;
-        }
-        if (assignedNominees.size !== scores.length) {
-          alert("Each score must be assigned to a different nominee.");
-          return;
-        }
-      }
-      step++;
-      render();
-    }
+       const nominees = [
+         "Elvis Amenano",
+         "Aminata Twumasiwaa",
+         "Philomena Etornam Dzirasah",
+         "Essandoh Victoria"
+       ];
 
-    function recordVote(parameter, nominee, score, paramIndex) {
-      if (!votes[parameter]) {
-        votes[parameter] = {};
-      }
+       let voterDetails = {};
+       let votes = {};
 
-      const currentVotes = votes[parameter];
+       function clearSelection(groupName) {
+         document.querySelectorAll(`input[name="${groupName}"]`).forEach(radio => radio.checked = false);
+       }
 
-      // Clear this nominee from other score groups
-      scores.forEach(otherScore => {
-        if (otherScore.value !== score && currentVotes[nominee] === otherScore.value) {
-          delete currentVotes[nominee];
-          const radio = document.querySelector(
-            `input[name="score-${otherScore.value}-${paramIndex}"][value="${nominee}"]`
-          );
-          if (radio) {
-            radio.checked = false;
-          }
-        }
-      });
+       function validateStaffId() {
+         const staffId = document.getElementById('staff-id').value;
+         const errorDiv = document.getElementById('error');
+         const staffIdRegex = /^\d{5,10}$/;
+         if (staffId && !staffIdRegex.test(staffId)) {
+           errorDiv.textContent = 'Error: Staff ID must be a 5 to 10-digit number.';
+           errorDiv.style.display = 'block';
+         } else {
+           errorDiv.style.display = 'none';
+         }
+       }
 
-      // Clear this score from other nominees
-      Object.keys(currentVotes).forEach(otherNominee => {
-        if (otherNominee !== nominee && currentVotes[otherNominee] === score) {
-          delete currentVotes[otherNominee];
-        }
-      });
+       function updateCounter() {
+         const staffId = document.getElementById('staff-id').value;
+         const counter = document.getElementById('staff-id-counter');
+         const length = staffId.length;
+         counter.textContent = `${length}/10`;
+         if (length > 10) {
+           counter.style.color = 'red';
+         } else {
+           counter.style.color = '#666';
+         }
+       }
 
-      // Assign the score to the current nominee
-      currentVotes[nominee] = score;
-      votes[parameter] = currentVotes;
+       function nextStep() {
+         const currentStep = document.querySelector('.step.active');
+         const errorDiv = document.getElementById('error');
+         errorDiv.style.display = 'none';
 
-      console.log('Votes after update:', votes);
-      render();
-    }
+         if (currentStep.id === 'step-1') {
+           const staffId = document.getElementById('staff-id').value;
+           const surname = document.getElementById('surname').value;
+           const middleName = document.getElementById('middle-name').value;
+           const otherName = document.getElementById('other-name').value;
 
-    function clearScore(parameter, score, paramIndex) {
-      if (!votes[parameter]) {
-        votes[parameter] = {};
-      }
+           const staffIdRegex = /^\d{5,10}$/;
+           if (!staffIdRegex.test(staffId)) {
+             errorDiv.textContent = 'Error: Staff ID must be a 5 to 10-digit number.';
+             errorDiv.style.display = 'block';
+             return;
+           }
+           if (!surname) {
+             errorDiv.textContent = 'Error: Surname is required.';
+             errorDiv.style.display = 'block';
+             return;
+           }
+           if (!otherName) {
+             errorDiv.textContent = 'Error: Other Name is required.';
+             errorDiv.style.display = 'block';
+             return;
+           }
 
-      const currentVotes = votes[parameter];
-      Object.keys(currentVotes).forEach(nominee => {
-        if (currentVotes[nominee] === score) {
-          delete currentVotes[nominee];
-        }
-      });
+           voterDetails = { staffId, surname, middleName, otherName };
+           showStep(2);
+         } else if (currentStep.id.startsWith('step-') && parseInt(currentStep.id.replace('step-', '')) <= 8) {
+           const stepNum = parseInt(currentStep.id.replace('step-', ''));
+           const param = parameters[stepNum - 2].name;
+           votes[param] = {};
 
-      votes[parameter] = currentVotes;
-      console.log('Votes after clearing:', votes);
-      render();
-    }
+           for (let score in { GOOD: 1, BETTER: 1, BEST: 1, EXCELLENT: 1 }) {
+             const selected = document.querySelector(`input[name="${param}-${score}"]:checked`);
+             if (!selected) {
+               errorDiv.textContent = `Error: Please assign a ${score} score for ${param}.`;
+               errorDiv.style.display = 'block';
+               return;
+             }
+             votes[param][score] = selected.value;
+           }
 
-    async function submitVotes() {
-      const container = document.getElementById("container");
-      try {
-        const response = await fetch('https://voting-backend-a27g.onrender.com/submit-vote', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ voterDetails, votes })
-        });
-        const result = await response.json();
-        if (result.success) {
-          const totals = {};
-          nominees.forEach(nominee => {
-            totals[nominee.name] = 0;
-            Object.values(votes).forEach(paramVotes => {
-              totals[nominee.name] += paramVotes[nominee.name] || 0;
-            });
-          });
-          const maxScore = Math.max(...Object.values(totals));
-          const winner = Object.keys(totals).find(name => totals[name] === maxScore);
+           const assignedNominees = new Set(Object.values(votes[param]));
+           if (assignedNominees.size !== 4) {
+             errorDiv.textContent = `Error: Please assign each score to a different nominee for ${param}.`;
+             errorDiv.style.display = 'block';
+             return;
+           }
 
-          container.innerHTML += `
-            <h2>Thank You for Voting!</h2>
-            <h3>Results</h3>
-            ${nominees.map(nominee => `
-              <p>${nominee.name}: ${totals[nominee.name]} points</p>
-            `).join('')}
-            <p class="winner">Winner: ${winner} with ${maxScore} points!</p>
-          `;
-        } else {
-          container.innerHTML += `<p>Error submitting vote. Please try again.</p>`;
-        }
-      } catch (error) {
-        console.error('Error submitting votes:', error); 
-        container.innerHTML += `<p>Error submitting vote. Please try again.</p>`; 
-      }
-    }
+           showStep(stepNum + 1);
+         }
+       }
 
-    render();
-  </script>
-</body>
-</html>
+       function showStep(stepNumber) {
+         document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+         document.getElementById(`step-${stepNumber}`).classList.add('active');
+       }
+
+       async function submitVotes() {
+         const submitBtn = document.getElementById('submit-btn');
+         submitBtn.disabled = true;
+         submitBtn.textContent = 'Submitting...';
+
+         const errorDiv = document.getElementById('error');
+         const successDiv = document.getElementById('success');
+         errorDiv.style.display = 'none';
+         successDiv.style.display = 'none';
+
+         for (let param of parameters) {
+           if (!votes[param.name]) {
+             errorDiv.textContent = `Error: Please vote for ${param.name} before submitting.`;
+             errorDiv.style.display = 'block';
+             submitBtn.disabled = false;
+             submitBtn.textContent = 'SUBMIT VOTES';
+             return;
+           }
+         }
+
+         try {
+           const controller = new AbortController();
+           const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+           const response = await fetch('https://voting-backend-a27g.onrender.com/submit-vote', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ voterDetails, votes }),
+             signal: controller.signal
+           });
+           clearTimeout(timeoutId);
+
+           if (response.status === 400) {
+             const result = await response.json();
+             errorDiv.textContent = result.message || 'Duplicate vote detected for this Staff ID.';
+             errorDiv.style.display = 'block';
+             submitBtn.disabled = false;
+             submitBtn.textContent = 'SUBMIT VOTES';
+             return;
+           }
+           const result = await response.json();
+           if (result.success) {
+             successDiv.textContent = 'Vote submitted successfully! Redirecting to results...';
+             successDiv.style.display = 'block';
+             setTimeout(() => {
+               window.location.href = 'https://voting-backend-a27g.onrender.com/results';
+             }, 2000);
+           } else {
+             errorDiv.textContent = 'Error submitting vote. Please try again.';
+             errorDiv.style.display = 'block';
+             submitBtn.disabled = false;
+             submitBtn.textContent = 'SUBMIT VOTES';
+           }
+         } catch (error) {
+           errorDiv.textContent = 'Network error. Please check your connection and try again.';
+           errorDiv.style.display = 'block';
+           submitBtn.disabled = false;
+           submitBtn.textContent = 'SUBMIT VOTES';
+         }
+       }
+
+       async function fetchResults() {
+         const resultsDisplay = document.getElementById('resultsDisplay');
+         resultsDisplay.innerHTML = '<p>Loading results...</p>';
+         console.log('Step 1: Fetching results from backend...');
+
+         try {
+           const response = await fetch('https://voting-backend-a27g.onrender.com/results');
+           console.log('Step 2: Response received, status:', response.status);
+
+           if (!response.ok) {
+             throw new Error(`HTTP error! Status: ${response.status}`);
+           }
+
+           const votes = await response.json();
+           console.log('Step 3: Votes data received:', votes);
+
+           if (!votes || votes.length === 0) {
+             resultsDisplay.innerHTML = '<p>No votes recorded yet.</p>';
+             console.log('Step 4: No votes found, displaying "No votes recorded yet."');
+             return;
+           }
+
+           const nomineeScores = {
+             "Elvis Amenano": 0,
+             "Aminata Twumasiwaa": 0,
+             "Philomena Etornam Dzirasah": 0,
+             "Essandoh Victoria": 0
+           };
+
+           votes.forEach((vote, index) => {
+             console.log(`Step 4: Processing vote ${index + 1}:`, vote);
+             parameters.forEach(param => {
+               const categoryVotes = vote.votes[param.name];
+               if (!categoryVotes) {
+                 console.log(`Warning: No votes found for ${param.name} in vote ${index + 1}`);
+                 return;
+               }
+               for (let nominee in categoryVotes) {
+                 nomineeScores[nominee] += categoryVotes[nominee];
+                 console.log(`Step 5: Adding ${categoryVotes[nominee]} to ${nominee} for ${param.name}`);
+               }
+             });
+           });
+
+           resultsDisplay.innerHTML = '<h3>Accumulated Results</h3>';
+           for (let nominee in nomineeScores) {
+             resultsDisplay.innerHTML += `<p>${nominee}: ${nomineeScores[nominee]} points</p>`;
+             console.log(`Step 6: Displaying ${nominee}: ${nomineeScores[nominee]} points`);
+           }
+         } catch (error) {
+           console.error('Step 7: Fetch error occurred:', error);
+           resultsDisplay.innerHTML = '<p>Error fetching results. Please try again later.</p>';
+         }
+       }
+     </script>
+   </body>
+   </html>
