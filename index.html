@@ -494,7 +494,6 @@
           votes[param][score] = selected.value;
         }
 
-        // Check for unique nominees
         const assignedNominees = new Set(Object.values(votes[param]));
         if (assignedNominees.size !== 4) {
           errorDiv.textContent = `Error: Please assign each score to a different nominee for ${param}.`;
@@ -521,7 +520,6 @@
       errorDiv.style.display = 'none';
       successDiv.style.display = 'none';
 
-      // Ensure all parameters are voted on
       for (let param of parameters) {
         if (!votes[param.name]) {
           errorDiv.textContent = `Error: Please vote for ${param.name} before submitting.`;
@@ -576,17 +574,25 @@
     async function fetchResults() {
       const resultsDisplay = document.getElementById('resultsDisplay');
       resultsDisplay.innerHTML = '<p>Loading results...</p>';
+      console.log('Step 1: Fetching results from backend...');
 
       try {
         const response = await fetch('https://voting-backend-a27g.onrender.com/results');
+        console.log('Step 2: Response received, status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const votes = await response.json();
+        console.log('Step 3: Votes data received:', votes);
 
         if (!votes || votes.length === 0) {
           resultsDisplay.innerHTML = '<p>No votes recorded yet.</p>';
+          console.log('Step 4: No votes found, displaying "No votes recorded yet."');
           return;
         }
 
-        // Initialize score tally for each nominee
         const nomineeScores = {
           "Elvis Amenano": 0,
           "Aminata Twumasiwaa": 0,
@@ -594,22 +600,28 @@
           "Essandoh Victoria": 0
         };
 
-        // Sum scores for each nominee across all votes and categories
-        votes.forEach(vote => {
+        votes.forEach((vote, index) => {
+          console.log(`Step 4: Processing vote ${index + 1}:`, vote);
           parameters.forEach(param => {
             const categoryVotes = vote.votes[param.name];
+            if (!categoryVotes) {
+              console.log(`Warning: No votes found for ${param.name} in vote ${index + 1}`);
+              return;
+            }
             for (let nominee in categoryVotes) {
               nomineeScores[nominee] += categoryVotes[nominee];
+              console.log(`Step 5: Adding ${categoryVotes[nominee]} to ${nominee} for ${param.name}`);
             }
           });
         });
 
-        // Display results
         resultsDisplay.innerHTML = '<h3>Accumulated Results</h3>';
         for (let nominee in nomineeScores) {
           resultsDisplay.innerHTML += `<p>${nominee}: ${nomineeScores[nominee]} points</p>`;
+          console.log(`Step 6: Displaying ${nominee}: ${nomineeScores[nominee]} points`);
         }
       } catch (error) {
+        console.error('Step 7: Fetch error occurred:', error);
         resultsDisplay.innerHTML = '<p>Error fetching results. Please try again later.</p>';
       }
     }
